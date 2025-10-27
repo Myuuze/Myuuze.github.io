@@ -1,6 +1,6 @@
-# Astro-Daisy
+# Myuuze Website
 
-A template project to let you get started with [Astro JS](https://astro.build/) and [Daisy UI](https://daisyui.com/), with [tinaCMS](https://tina.io/) for easy content authoring. The template has basically **no design** outside a navbar, and dumping content from the blog collection on the respective pages. 
+This repo is the main information website for [Myuuze](https://github.com/Myuuze), and can be found [here](https://myuuze.github.io)
 
 ## Running locally
 
