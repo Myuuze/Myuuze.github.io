@@ -1,0 +1,26 @@
+---
+title: Introduction
+description: A guide in my new Starlight docs site.
+sidebar:
+  # Set a custom order for the link (lower numbers are displayed higher up)
+  order: 1
+  # Add a badge to the link
+  badge:
+    text: Start Here
+    variant: tip
+
+---
+import { Code } from '@astrojs/starlight/components';
+
+import { SaveFile } from "starlight-save-file-component";
+
+
+Hello world
+
+
+<Code code={`import math
+math.floor(3)`} lang="py"/>
+
+
+<SaveFile title="Compose file" href="../../../../public/docker-compose.yml" />
+

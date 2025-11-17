@@ -1,0 +1,863 @@
+openapi: 3.0.4
+info:
+  title: Myuuze Local Server
+  description: |-
+    This is the documentation for the routes available on the myuuze local server instance. This is a single-user server, it is not intended to have auth, please implement auth at the proxy layer with something like [pangolin](https://github.com/fosrl/pangolin). You can access these docs on your server at `http://<your server>/docs`
+
+    - [Source Code](https://github.com/Myuuze/local-server)
+  license:
+    name: MIT
+    url: https://choosealicense.com/licenses/mit/
+  version: 0.1.0
+externalDocs:
+  description: Find out more about Myuuze
+  url: https://myuuze.github.io/
+tags:
+  - name: info
+    description: Find out information about the server
+    externalDocs:
+      description: docs
+      url: https://myuuze.github.io/operations/tags/info/
+  - name: songs
+    description: Access information about songs
+    externalDocs:
+      description: Find out more
+      url: https://myuuze.github.io/operations/tags/songs/
+  - name: albums
+    description: Find out information about albums
+    externalDocs:
+      description: Find out more
+      url: https://myuuze.github.io/operations/tags/albums/
+  - name: analytics
+    description: Access information about usage
+    externalDocs:
+      description: Find out more
+      url: https://myuuze.github.io/operations/tags/analytics/
+paths:
+
+  # Info
+  /info:
+    get:
+      tags: [info]
+      summary: Server info (GET)
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/ServerError'
+    head:
+      tags: [info]
+      summary: Server info headers (HEAD)
+      responses:
+        '200':
+          description: OK (headers set)
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # Songs
+  /song/{id}:
+    get:
+      tags: [songs]
+      summary: Get a song by ID
+      parameters:
+        - name: id
+          in: path
+          description: Song ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Found song
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /songs:
+    get:
+      tags: [songs]
+      summary: List songs (paginated)
+      parameters:
+        - name: page
+          in: query
+          description: page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: List of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /songs/random:
+    get:
+      tags: [songs]
+      summary: List random songs (paginated)
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Randomized songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /songs/{artist}:
+    get:
+      tags: [songs]
+      summary: Get songs by artist
+      parameters:
+        - name: artist
+          in: path
+          required: true
+          description: URL encoded artist name
+          schema:
+            type: string
+        - name: strict
+          in: query
+          required: false
+          description: Whether to strictly search (true) or fuzzy-find (default)
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Songs by artist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # Albums
+  /album/{id}:
+    get:
+      tags: [albums]
+      summary: Get an album by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /albums:
+    get:
+      tags: [albums]
+      summary: List albums (paginated)
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: List of albums
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /albums/{artist}:
+    get:
+      tags: [albums]
+      summary: Get albums by artist (strict or fuzzy)
+      parameters:
+        - name: artist
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: strict
+          in: query
+          required: false
+          description: If "true" uses strict search; otherwise fuzzy
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Albums by artist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /library/{filename}:
+    get:
+      tags: [info]
+      summary: Serve a file from the library
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File returned
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # Analytics read endpoints
+  /analytics/song/{id}/started:
+    get:
+      tags: [analytics]
+      summary: Get number of started listens for a song
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Number of listens started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [analytics]
+      summary: Register that a song has started (increment listen)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Registered
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /analytics/song/{id}/ended:
+    get:
+      tags: [analytics]
+      summary: Get number of completions for a song
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Number of completions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [analytics]
+      summary: Register that a song has ended (increment completed)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Registered
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /analytics/album/{id}/viewed:
+    get:
+      tags: [analytics]
+      summary: Get album view count
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Album views
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '404':
+          description: Album not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [analytics]
+      summary: Register that an album was viewed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Registered
+        '404':
+          description: Album not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /analytics/artist/{name}/viewed:
+    get:
+      tags: [analytics]
+      summary: Get artist view count
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artist views
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '404':
+          description: Artist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [analytics]
+      summary: Register that an artist was viewed
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Registered
+        '404':
+          description: Artist not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /analytics/artist/{name}/listens:
+    get:
+      tags: [analytics]
+      summary: Get artist listens count
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artist listens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /analytics/top/artist:
+    get:
+      tags: [analytics]
+      summary: Top artists (by views or listens)
+      parameters:
+        - name: by
+          in: query
+          required: false
+          description: "Sort by 'views' or 'listens'. If omitted defaults to listens."
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Top artists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountByName'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /analytics/top/songs:
+    get:
+      tags: [analytics]
+      summary: Top songs (by started or completed)
+      parameters:
+        - name: by
+          in: query
+          required: false
+          description: "Use 'completed' for completions, otherwise started"
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Top songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopSong'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /analytics/top/albums:
+    get:
+      tags: [analytics]
+      summary: Top albums (by views or listened)
+      parameters:
+        - name: by
+          in: query
+          required: false
+          description: "Sort by 'views' or other metrics"
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Top albums
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountByName'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # Recents
+  /recents:
+    get:
+      tags: [songs]
+      summary: Recently added/listened songs (paginated)
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Recent songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /recents/albums:
+    get:
+      tags: [albums]
+      summary: Recently viewed or listened albums
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: by
+          in: query
+          required: false
+          description: "Use 'views' for recently viewed, otherwise recently listened"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recent albums
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /recents/artists:
+    get:
+      tags: [analytics]
+      summary: Recently viewed or listened artists
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: by
+          in: query
+          required: false
+          description: "Use 'views' for recently viewed, otherwise recently listened"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recent artists (generic array)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountByName'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /popular:
+    get:
+      tags: [songs]
+      summary: Popular songs (by started)
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Popular songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+
+    # Basic primitives
+    UUID:
+      type: string
+      format: uuid
+      example: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+
+    # Reusable small schemas
+    CountResponse:
+      type: object
+      properties:
+        listens:
+          type: integer
+          format: int64
+        completions:
+          type: integer
+          format: int64
+        views:
+          type: integer
+          format: int64
+      additionalProperties: false
+      example:
+        listens: 123
+        completions: 45
+        views: 678
+
+    CountByName:
+      type: object
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+          format: int64
+      required:
+        - name
+        - count
+      example:
+        name: "Nirvana"
+        count: 1234
+
+    TopSong:
+      type: object
+      properties:
+        songId:
+          $ref: '#/components/schemas/UUID'
+        title:
+          type: string
+        artist:
+          type: string
+        started:
+          type: integer
+          format: int64
+        completed:
+          type: integer
+          format: int64
+      required:
+        - songId
+        - title
+      example:
+        songId: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+        title: "Smells Like Teen Spirit"
+        artist: "Nirvana"
+        started: 1200
+        completed: 300
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "NOT_FOUND"
+        message:
+          type: string
+          example: "Resource not found"
+      required:
+        - code
+        - message
+
+    # Domain models
+    Song:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Title:
+          type: string
+        URI:
+          type: string
+          description: Resource URL to the song
+        Artist:
+          type: string
+        Album:
+          $ref: '#/components/schemas/Album'
+      required:
+        - ID
+        - Title
+        - URI
+        - Artist
+      example:
+        ID: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+        Title: "Smells Like Teen Spirit"
+        URI: "http://localhost:7674/library/music/nirvana/nevermind/01.mp3"
+        Artist: "Nirvana"
+        Album:
+          $ref: '#/components/schemas/AlbumExample'
+
+    Album:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Title:
+          type: string
+        Artist:
+          type: string
+        Cover:
+          type: string
+          nullable: true
+          description: Base64 data URI or URL to cover image; may be null
+        year:
+          type: integer
+          format: int32
+          nullable: true
+          description: The year the album was made (may be null)
+        tracks:
+          type: array
+          nullable: true
+          description: The album's tracklist (can be null to avoid cyclical marshalling)
+          items:
+            $ref: '#/components/schemas/Song'
+      required:
+        - ID
+        - Title
+        - Artist
+      example:
+        ID: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+        Title: "Nevermind"
+        Artist: "Nirvana"
+        Cover: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+        year: 1991
+        tracks: null
+
+    Playlist:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Title:
+          type: string
+        Tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Song'
+      required:
+        - ID
+        - Title
+      example:
+        ID: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+        Title: "My Favorites"
+        Tracks: []
+
+    # Example album to avoid circular example expansion in some tools
+    AlbumExample:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Title:
+          type: string
+        Artist:
+          type: string
+        Cover:
+          type: string
+          nullable: true
+      example:
+        ID: "018f3d9a-3c8c-7b21-bc3a-fc84f07a21e1"
+        Title: "Nevermind"
+        Artist: "Nirvana"
+        Cover: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+
+  responses:
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              value:
+                code: "INTERNAL_ERROR"
+                message: "An internal error occurred"
