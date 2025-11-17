@@ -22,5 +22,28 @@ Hello world
 math.floor(3)`} lang="py"/>
 
 
-<SaveFile title="Compose file" href="../../../../public/docker-compose.yml" />
+<SaveFile title="Compose file" href="../../../../public/download-files/docker-compose.yml" />
 
+```mermaid
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal <|-- Zebra
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Animal: +mate()
+    class Duck{
+      +String beakColor
+      +swim()
+      +quack()
+    }
+    class Fish{
+      -int sizeInFeet
+      -canEat()
+    }
+    class Zebra{
+      +bool is_wild
+      +run()
+    }
+```

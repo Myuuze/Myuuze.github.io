@@ -25,6 +25,11 @@
 	--sl-color-black: oklch(96% 0.059 95); /* error-content */
 }
 
+:root[data-theme='light'] .expressive-code .frame{
+	--code-background: var(--sl-color-bg);
+}
+
+
 /* Dark mode colors — Halloween Theme */
 :root {
 	--sl-color-accent-low: oklch(24.371% 0.046 65.681); /* neutral */
@@ -45,3 +50,4 @@
     navigation: auto;
   }
 }
+

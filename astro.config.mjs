@@ -7,11 +7,16 @@ import tailwindcss from '@tailwindcss/vite';
 import starlightSidebarTopics from 'starlight-sidebar-topics'
 import starlightSidebarSwipe from 'starlight-sidebar-swipe'
 import starlightContextualMenu from "starlight-contextual-menu";
+import mermaid from 'astro-mermaid';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://myuuze.github.io',
   integrations: [
+        mermaid({
+            theme:"forest",
+            autoTheme:true
+        }),
       starlight({
           title: 'Myuuze',
           logo: {
@@ -124,8 +129,6 @@ export default defineConfig({
             starlightContextualMenu({
                 actions: ["copy", "view", "chatgpt", "claude"]
             }),
-
-
 
         ],
         components: {
