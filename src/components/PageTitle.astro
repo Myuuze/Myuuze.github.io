@@ -1,0 +1,13 @@
+---
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import QRCode from "@/components/qr-code.svelte"
+---
+
+<Default>
+
+</Default><br> <QRCode qrColorVariable="--sl-color-text"
+    backgroundColorVariable="--sl-color-bg"
+	link={Astro.site+ Astro.url.pathname.slice(1)} 
+	scale="2"
+	error="Q"
+client:load/>
