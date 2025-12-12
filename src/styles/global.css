@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+
+/* Light mode colors — Retro Theme */
+:root[data-theme='light'] {
+	--sl-color-accent-low: oklch(88.272% 0.049 91.774);
+	--sl-color-accent: oklch(66.684% 0.21692 13.883); /* accent */
+	--sl-color-accent-high: oklch(41% 0.112 45.904); /* accent-content */
+
+	--sl-color-white: oklch(41% 0.112 45.904); /* base-100 */
+	--sl-color-gray-1: oklch(96% 0.059 96); /* base-200 */
+	--sl-color-gray-2: oklch(29.313% 0.00003 271.152); /* base-300 */
+	--sl-color-gray-3: oklch(44.439% 0.01266 196.927); /* neutral */
+	--sl-color-gray-4: oklch(96% 0.059 93); /* base-content */
+	--sl-color-gray-5: oklch(44.391% 0.07436 51.66); /* primary-content */
+	--sl-color-gray-6: oklch(66.493% 0.19032 43.948); /* fallback darker neutral */
+	--sl-color-gray-7: oklch(41% 0.112 45.904); /* info-content */
+
+	--sl-color-black: oklch(96% 0.059 95); /* error-content */
+}
+
+:root[data-theme='light'] .expressive-code .frame{
+	--code-background: var(--sl-color-bg);
+}
+
+
+/* Dark mode colors — Halloween Theme */
+:root {
+	--sl-color-accent-low: oklch(24.371% 0.046 65.681); /* neutral */
+	--sl-color-accent: oklch(77.48% 0.204 60.62); /* primary */
+    --sl-color-accent-high: oklch(66.684% 0.21692 13.883);/* primary-content */
+	--sl-color-white: oklch(84.955% 0 0); /* base-content */
+	--sl-color-gray-1: oklch(84.955% 0 0); /* info */
+	--sl-color-gray-2: oklch(84.955% 0 0); /* secondary */
+	--sl-color-gray-3: #7c2033; /* neutral */
+	--sl-color-gray-4: oklch(66.684% 0.21692 13.883); /* base-200 */
+	--sl-color-gray-5: oklch(45.678% 0.00005 271.152); /* base-100 */
+	--sl-color-gray-6: oklch(28.908% 0.00003 271.152); /* base-300 */
+	--sl-color-black: oklch(0% 0 0); /* solid black */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+

@@ -1,0 +1,49 @@
+---
+title: Introduction
+description: A guide in my new Starlight docs site.
+sidebar:
+  # Set a custom order for the link (lower numbers are displayed higher up)
+  order: 1
+  # Add a badge to the link
+  badge:
+    text: Start Here
+    variant: tip
+
+---
+import { Code } from '@astrojs/starlight/components';
+
+import { SaveFile } from "starlight-save-file-component";
+
+
+Hello world
+
+
+<Code code={`import math
+math.floor(3)`} lang="py"/>
+
+
+<SaveFile title="Compose file" href="../../../../public/download-files/docker-compose.yml" />
+
+```mermaid
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal <|-- Zebra
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Animal: +mate()
+    class Duck{
+      +String beakColor
+      +swim()
+      +quack()
+    }
+    class Fish{
+      -int sizeInFeet
+      -canEat()
+    }
+    class Zebra{
+      +bool is_wild
+      +run()
+    }
+```

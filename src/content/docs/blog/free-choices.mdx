@@ -1,0 +1,46 @@
+---
+title: '"Free" Choice'
+date: 2025-12-11
+topic: blog
+lastUpdated: 2025-12-11
+tags:
+    - open-source
+    - licensing
+cover:
+  alt: An image of the logo of the site
+  image: ../../../assets/blog/free-choices/hero.png
+---
+
+import {Image} from "astro:assets"
+import DRMImage from "@/assets/blog/free-choices/drm.png"
+
+I'm someone who has been active in open source for many years now. Throughout that time I've dealt with lots of different people, who have different ideas about what constitutes "open", and to what extent it matters. I started Myuuze because of problems that I was personally dealing with in the modern music streaming landscape, namely censorship of artists (some intentional, some as likely legal/licensing collateral damage), and a lack of basic features I wanted. Like losing some of [sinead O'Connor](https://www.reddit.com/r/spotify/comments/rvaurk/seann%C3%B3s_nua_album_by_sinead_oconnor_including_my/) or in one egregious case a playlist from 2016 I had ended up losing 135 tracks over the years!
+
+What I never expected was a new sort of issue I hadn't encountered before, DRM.
+
+{/* excerpt */}
+
+## What is DRM?
+
+For those unaware DRM or digital rights management, is the name given to software that limits actions you can take with media. Games for example often have DRM as an anti-piracy measure. These systems often lead to issues like legitimate copies of games being locked out because servers are down, or a software error etc. They exist in many forms, including more pernitious ones like HDCP (High-bandwidth Digital Content Protection), which is DRM built into the HDMI specification (common cable for video) that stops you from being **allowed to play** content without it, even if you do have a license/account. I'm not interested in litigating arguments around the benefits and disadvantages of DRM, but for the first time in many years I encountered it as a problem. As I said DRM is used everywhere, from movie streaming services to college textbook providers, and as I found out, music streaming services. 
+
+
+## A New Challenger
+
+I decided to give the [helium](https://helium.computer/) browser a whirl the other day. I'm not big on the need to switch browsers, but it's always good to see how the ecosystem is evolving over time. Helium is aiming towards essentially being chrome without the privacy concerns. A useful wrapper around chromium, with some additional nice-to-have's for customization and usability. That privacy part is relatively important because **a lot of DRM inherently violates your privacy**. Whether it be constant telemetry, unique identifiers, or the need to message a server and give up your IP to do a key exchange, a lot of DRM sticks it's fingers in the eyes of privacy. 
+
+I'm not going to claim to know the details of Spotify's DRM (like [some others](https://news.ycombinator.com/item?id=32514472)), but what I do know for sure is that it breaks on helium:
+
+<Image src={DRMImage} alt="spotify drm"/>
+
+Now maybe some of you just think the browser is poorly written, but after searching Helium also seems to not be the only culprit based on [other posts](https://www.reddit.com/r/truespotify/comments/1mxq4p4/spotify_has_a_fatal_flaw_in_its_drm_that_causes/). This is actually quite annoying for me because it means as a paying customer to access content I'm paying for I either have to:
+
+<blockquote>
+A) Violate the license terms and bypass the DRM. Likely with some sketchy extension that probably is just going to steal my IP or worse, and all the potential legal consequences and time I need to invest into that
+
+B) Move away from using spotify, which is What I'm actually going to do
+</blockquote>
+
+I'm not a particularly rah-rah person when it comes to open source. Frankly, if a tool works for what I need, and is reasonably priced, I don't actually care that much about the source being available. That being said I do find that if the landscape is getting to a place where being able to play music on an account you subscribe to a service with is activism, then I guess I'm in. I want to just pay some money and not have to worry about this sort of stuff, but apparently that's not an option. 
+
+So, reluctantly this is why I wrote Myuuze in the first place. Not this specific reason, but reasons like it just keep piling up.
